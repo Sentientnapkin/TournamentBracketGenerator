@@ -13,7 +13,8 @@ public class Main {
     players.add("Ghost");
     players.add("Semper");
     players.add("Solary");
-    SingleElimination b1 = new SingleElimination(players, 5);
+    //SingleElimination b1 = new SingleElimination(players, 5);
+    DoubleElimination b2 = new DoubleElimination(players, 5);
   }
 }
 

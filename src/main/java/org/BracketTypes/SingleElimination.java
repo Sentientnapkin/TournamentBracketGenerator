@@ -7,9 +7,8 @@ import java.util.ArrayList;
 
 public class SingleElimination implements ActionListener {
   private int bracketSize;
-  private int playerAmount;
-  private int boX;
-  private ArrayList<String> players;
+  private final int boX;
+  private final ArrayList<String> players;
   private ArrayList<JPanel> panels;
   JFrame frame;
   JButton refresh;
@@ -18,7 +17,7 @@ public class SingleElimination implements ActionListener {
 
   public SingleElimination(ArrayList<String> players, int boX) {
 
-    this.playerAmount = players.size();
+    int playerAmount = players.size();
 
     this.players = players;
 
@@ -27,13 +26,13 @@ public class SingleElimination implements ActionListener {
       num++;
     }
     this.bracketSize = (int) (Math.pow(2, num));
-    if (this.bracketSize>this.playerAmount) {
+    if (this.bracketSize> playerAmount) {
       this.bracketSize /=2;
     }
 
     this.boX = boX;
 
-    panels = new ArrayList<JPanel>();
+    panels = new ArrayList<>();
 
     frame = new JFrame("Single Elimination Bracket");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -97,7 +96,7 @@ public class SingleElimination implements ActionListener {
             if(match.isFinished()) {
               String won = match.getWinner();
               if (panelIndex + 1 == panels.size()-2) {
-                winner.setText(won);
+                winner.setText(won+" wins!");
               }
               if (panels.get(panelIndex+1).getComponent(matchIndex/2) instanceof Match) {
                 Match nextMatch = (Match) panels.get(panelIndex+1).getComponent(matchIndex/2);
