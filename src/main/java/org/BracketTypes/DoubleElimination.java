@@ -35,7 +35,7 @@ public class DoubleElimination implements ActionListener {
     upperPanels = new ArrayList<>();
     lowerPanels = new ArrayList<>();
 
-    frame = new JFrame("Single Elimination Bracket");
+    frame = new JFrame("Double Elimination Bracket");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 
@@ -79,7 +79,7 @@ public class DoubleElimination implements ActionListener {
         }
         n /= 2;
       }
-      Match grandFinals = new Match(boX, "","");
+      GrandFinals grandFinals = new GrandFinals(boX, "","");
       upperPanels.get(upperPanels.size()-1).add(grandFinals);
     }
 
@@ -97,15 +97,15 @@ public class DoubleElimination implements ActionListener {
     //populate lower bracket rounds with matches
     int bracketIndex = 0;
     n=2;
-    while(n>0){
+    while(n<bracketSize){
       for(int d = 0;d<2;d++) {
-        for (int j = 0; j < bracketSize / n; j += 2) {
+        for (int j = bracketSize / n; j > 0; j -= 2) {
           Match match = new Match(boX, "", "");
           lowerPanels.get(bracketIndex).add(match);
         }
         bracketIndex++;
       }
-      n/=2;
+      n*=2;
     }
 
     win = new JPanel();
@@ -126,23 +126,88 @@ public class DoubleElimination implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent ae) {
     if (ae.getActionCommand().equals("Refresh")) {
-      for (int panelIndex = 0; panelIndex < upperPanels.size()-1; panelIndex++) {
-        for (int matchIndex = 0; matchIndex < upperPanels.get(panelIndex).getComponentCount(); matchIndex++) {
-          System.out.println(panelIndex);
-          if(upperPanels.get(panelIndex).getComponent(matchIndex) instanceof Match) {
-            Match match = (Match) upperPanels.get(panelIndex).getComponent(matchIndex);
-            if(match.isFinished()) {
-              String won = match.getWinner();
-              if (panelIndex + 1 == upperPanels.size()-2) {
-                winner.setText(won+" wins!");
+      refreshLower();
+      refreshUpper();
+    }
+  }
+
+  public void refreshUpper () {
+    for (int panelIndex = 0; panelIndex < upperPanels.size()-1; panelIndex++) {
+      for (int matchIndex = 0; matchIndex < upperPanels.get(panelIndex).getComponentCount(); matchIndex++) {
+        if(upperPanels.get(panelIndex).getComponentCount()==1&&panelIndex!=upperPanels.size()-2) {
+          Match match = (Match) upperPanels.get(panelIndex).getComponent(matchIndex);
+          if(match.isFinished()){
+            Match loser = (Match) lowerPanels.get(panelIndex+1).getComponent(0);
+            Match nextMatch = (Match) upperPanels.get(panelIndex+1).getComponent(matchIndex);
+            loser.setTeam2(match.getLoser());
+            nextMatch.setTeam1(match.getWinner());
+          }
+        }
+        else if(upperPanels.get(panelIndex).getComponent(matchIndex) instanceof Match) {
+          Match match = (Match) upperPanels.get(panelIndex).getComponent(matchIndex);
+          if(match.isFinished()) {
+            String won = match.getWinner();
+            String lost = match.getLoser();
+            if (panelIndex + 1 == upperPanels.size()-1) {
+              winner.setText(won+" wins!");
+            }
+            if (upperPanels.get(panelIndex+1).getComponent(matchIndex/2) instanceof Match) {
+              Match nextMatch = (Match) upperPanels.get(panelIndex+1).getComponent(matchIndex/2);
+              if(nextMatch.getTeam1().equals("")) {
+                nextMatch.setTeam1(won);
+              } else {
+                nextMatch.setTeam2(won);
               }
-              if (upperPanels.get(panelIndex+1).getComponent(matchIndex/2) instanceof Match) {
-                Match nextMatch = (Match) upperPanels.get(panelIndex+1).getComponent(matchIndex/2);
-                if(nextMatch.getTeam1().equals("")) {
-                  nextMatch.setTeam1(won);
+              if(lowerPanels.get(panelIndex).getComponentCount()==upperPanels.get(panelIndex).getComponentCount()){
+                Match loserMatch = (Match) lowerPanels.get(panelIndex).getComponent(matchIndex);
+                if(loserMatch.getTeam1().equals("")) {
+                  loserMatch.setTeam1(lost);
                 } else {
-                  nextMatch.setTeam2(won);
+                  loserMatch.setTeam2(lost);
                 }
+              } else {
+                Match loserMatch = (Match) lowerPanels.get(panelIndex).getComponent(matchIndex / 2);
+                if (loserMatch.getTeam1().equals("")) {
+                  loserMatch.setTeam1(lost);
+                } else {
+                  loserMatch.setTeam2(lost);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  public void refreshLower () {
+    for (int panelIndex = 0; panelIndex < lowerPanels.size(); panelIndex++) {
+      for (int matchIndex = 0; matchIndex < lowerPanels.get(panelIndex).getComponentCount(); matchIndex++) {
+        if(panelIndex!=lowerPanels.size()-4&&lowerPanels.get(panelIndex).getComponentCount()==1) {
+          Match match = (Match) lowerPanels.get(panelIndex).getComponent(matchIndex);
+          if(match.isFinished()){
+            Match grandFinals = (Match) upperPanels.get(upperPanels.size()-2).getComponent(0);
+            grandFinals.setTeam2(match.getWinner());
+          }
+        }
+        else if(lowerPanels.get(panelIndex).getComponent(matchIndex) instanceof Match) {
+          Match match = (Match) lowerPanels.get(panelIndex).getComponent(matchIndex);
+          if(match.isFinished()) {
+            String won = match.getWinner();
+            if(lowerPanels.get(panelIndex+1).getComponentCount()<=matchIndex){
+              Match nextMatch = (Match) lowerPanels.get(panelIndex+1).getComponent(matchIndex/2);
+              if(nextMatch.getTeam1().equals("")) {
+                nextMatch.setTeam1(won);
+              } else if (nextMatch.getTeam2().equals("")) {
+                nextMatch.setTeam2(won);
+              }
+            }
+            else if (lowerPanels.get(panelIndex+1).getComponent(matchIndex) instanceof Match) {
+              Match nextMatch = (Match) lowerPanels.get(panelIndex+1).getComponent(matchIndex);
+              if(nextMatch.getTeam1().equals("")) {
+                nextMatch.setTeam1(won);
+              } else if (nextMatch.getTeam2().equals("")){
+                nextMatch.setTeam2(won);
               }
             }
           }

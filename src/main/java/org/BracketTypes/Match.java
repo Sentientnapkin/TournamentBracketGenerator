@@ -23,13 +23,13 @@ public class Match extends JPanel {
     this.team1 = new JLabel(team1);
     team1Panel.add(this.team1);
 
-    this.score1 = new JTextField(5);
+    this.score1 = new JTextField(3);
     team1Panel.add(score1);
 
     this.team2 = new JLabel(team2);
     team2Panel.add(this.team2);
 
-    this.score2 = new JTextField(5);
+    this.score2 = new JTextField(3);
     team2Panel.add(score2);
   }
 
@@ -49,12 +49,32 @@ public class Match extends JPanel {
     this.team2.setText(team2);
   }
 
+  public JPanel getTeam1Panel(){
+    return team1Panel;
+  }
+
+  public JPanel getTeam2Panel(){
+    return team2Panel;
+  }
+
   public int getScore1() {
-    return Integer.parseInt(score1.getText());
+    String nums = "0123456789";
+    if(score1.getText().length()>0 && nums.contains(score1.getText().substring(0,1))){
+      return Integer.parseInt(score1.getText());
+    }
+    else {
+      return 0;
+    }
   }
 
   public int getScore2() {
-    return Integer.parseInt(score2.getText());
+    String nums = "0123456789";
+    if(score2.getText().length()>0 && nums.contains(score2.getText().substring(0,1))){
+      return Integer.parseInt(score2.getText());
+    }
+    else {
+      return 0;
+    }
   }
 
   public boolean isFinished() {
@@ -62,17 +82,23 @@ public class Match extends JPanel {
   }
 
   public String getWinner() {
-    if (getTeam1().equals("bye")) {
-      return getTeam2();
-    }
-    else if (getTeam2().equals("bye")) {
-      return getTeam1();
-    }
-    else if (isFinished()) {
+    if (isFinished()) {
       if (getScore1() > getScore2()) {
         return getTeam1();
       } else {
         return getTeam2();
+      }
+    } else {
+      return "";
+    }
+  }
+
+  public String getLoser() {
+    if (isFinished()) {
+      if (getScore1() > getScore2()) {
+        return getTeam2();
+      } else {
+        return getTeam1();
       }
     } else {
       return "";
