@@ -8,13 +8,14 @@ public class Main {
     players.add("FaZe");
     players.add("BDS");
     players.add("G2");
-    players.add("Moist Esports");
+    players.add("Moist");
     players.add("SSG");
     players.add("Ghost");
     players.add("Semper");
     players.add("Solary");
     //SingleElimination b1 = new SingleElimination(players, 5);
-    DoubleElimination b2 = new DoubleElimination(players, 5);
+    //DoubleElimination b2 = new DoubleElimination(players, 5);
+    RoundRobin b3 = new RoundRobin(players, 5);
   }
 }
 
